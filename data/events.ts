@@ -26,7 +26,7 @@ export const events: Event[] = [
     kategori: "Olahraga",
     tanggal: "2026-11-20",
     lokasi: "Lapangan Sekolah",
-    harga: 0,
+    harga: 20,
     kuota: 20,
     terisi: 20,
   },
