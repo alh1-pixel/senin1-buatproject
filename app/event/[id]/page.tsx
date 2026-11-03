@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { events, rupiah } from "@/data/events";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 
 export default async function Detail({ params }: PageProps<"/event/[id]">) {
   const { id } = await params;

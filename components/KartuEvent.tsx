@@ -9,7 +9,7 @@ export default function KartuEvent({ event }: { event: Event }) {
         {event.kategori}
       </span>
       <h3 className="mt-2 text-lg font-semibold">{event.judul}</h3>
-      <p className="textsm text-slate-500">
+      <p className="text-sm text-slate-500">
         {event.tanggal} ~ {event.lokasi}
       </p>
       <p className="mt-2 font-medium">{rupiah(event.harga)}</p>
@@ -22,7 +22,7 @@ export default function KartuEvent({ event }: { event: Event }) {
       </p>
       <Link
         href={`/event/${event.id}`}
-        className="mt-3 inline-block rounded bg-blue-600 px-3 py-1.5 text-sm text white hover:bg-blue-700"
+        className="mt-3 inline-block rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
       >
         Lihat detail
       </Link>
