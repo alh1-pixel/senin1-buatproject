@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  async rewrites() {
+    return [{ source: "/event/:id((?!\\d+$).+)", destination: "/tidak-ada" }];
+  },
   turbopack: {
     rules: {
       "*.css": {
