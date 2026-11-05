@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { events, rupiah } from "@/data/events";
 import FormPesan from "@/components/FormPesan";
 import TombolFavorit from "@/components/TombolFavorit";
+import Link from "next/link";
 
 export default async function Detail({ params }: PageProps<"/event/[id]">) {
   const { id } = await params;
@@ -9,6 +10,9 @@ export default async function Detail({ params }: PageProps<"/event/[id]">) {
   if (!event) notFound();
 
   const sisa = event.kuota - event.terisi;
+  const terkait = events.filter(
+    (e) => e.kategori === event.kategori && e.id !== event.id,
+  );
   return (
     <article className="rounded-xl border bg-white p-6">
       <span className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
@@ -32,6 +36,25 @@ export default async function Detail({ params }: PageProps<"/event/[id]">) {
           Tiket sudah habis.
         </p>
       )}
+      <section className="mt-8 border-t pt-4">
+        <h2 className="text-lg font-semibold">Event terkait</h2>
+        {terkait.length === 0 ? (
+          <p className="mt-2 text-slate-500">Belum ada event terkait.</p>
+        ) : (
+          <ul className="mt-2 space-y-1">
+            {terkait.map((e) => (
+              <li key={e.id}>
+                <Link
+                  href={`/event/${e.id}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {e.judul}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </article>
   );
 }
