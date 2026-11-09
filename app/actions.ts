@@ -35,7 +35,11 @@ export async function pesanTiket(
 
   const sisa = event.kuota - event.terisi;
   const galat: HasilPesan["galat"] = {};
-  if (nama.length < 3) galat.nama = "Nama minimal 3 huruf.";
+  if (nama.length < 3) {
+    galat.nama = "Nama minimal 3 huruf.";
+  } else if (nama.length > 40) {
+    galat.nama = "Nama maksimal 40 huruf.";
+  }
   if (!/^\S+@\S+\.\S+$/.test(email))
     galat.email = "Email tidak valid (contoh: nama@sekolah.id).";
   if (!Number.isInteger(jumlah) || jumlah < 1)
