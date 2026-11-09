@@ -1,4 +1,5 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import { events } from "@/data/events";
 import { tambahPesanan } from "@/data/pesanan";
 
@@ -35,7 +36,8 @@ export async function pesanTiket(
   const sisa = event.kuota - event.terisi;
   const galat: HasilPesan["galat"] = {};
   if (nama.length < 3) galat.nama = "Nama minimal 3 huruf.";
-  if (!email.includes("@")) galat.email = "Email harus memuat tanda @.";
+  if (!/^\S+@\S+\.\S+$/.test(email))
+    galat.email = "Email tidak valid (contoh: nama@sekolah.id).";
   if (!Number.isInteger(jumlah) || jumlah < 1)
     galat.jumlah = "Jumlah tiket minimal 1.";
   else if (jumlah > 5) galat.jumlah = "Maksimal 5 tiket per pesanan.";
@@ -61,10 +63,14 @@ export async function pesanTiket(
     waktu: new Date().toLocaleString("id-ID"),
   });
 
+  // supaya "Sisa X dari Y tiket" dan katalog ikut diperbarui
+  revalidatePath("/event");
+  revalidatePath(`/event/${eventId}`);
+
   return {
     berhasil: true,
     pesan: `Pesanan #${nomor} tersimpan: ${jumlah} tiket untuk ${nama}.`,
     galat: {},
-    isian: { nama, email: "" },
+    isian: { nama: "", email: "" },
   };
 }

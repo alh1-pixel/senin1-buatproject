@@ -21,7 +21,7 @@ export default function FormPesan({ event }: { event: Event }) {
   return (
     <form action={kirim} className="mt-6 space-y-3 border-t pt-4">
       <h2 className="text-lg font-semibold">Pesan tiket</h2>
-      <input type="hidden" name="evenntId" value={event.id} />
+      <input type="hidden" name="eventId" value={event.id} />
       <div>
         <input
           name="nama"
@@ -50,8 +50,10 @@ export default function FormPesan({ event }: { event: Event }) {
         <input
           name="jumlah"
           type="number"
+          min={1}
+          max={Math.min(5, sisa)}
           value={jumlah}
-          onChange={(e) => setJumlah(Number(e.target.value))}
+          onChange={(e) => setJumlah(Math.max(1, Number(e.target.value) || 1))}
           className="block w-32 rounded border px-3 py-2"
         />
         {hasil.galat.jumlah && (
