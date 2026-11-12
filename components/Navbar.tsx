@@ -8,6 +8,7 @@ const menu = [
   { href: "/favorit", teks: "Favorit" },
   { href: "/tentang", teks: "Tentang" },
   { href: "/kontak", teks: "Kontak" },
+  { href: "/pesanan", teks: "Pesanan" },
 ];
 
 export default function Navbar() {

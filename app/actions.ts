@@ -1,7 +1,8 @@
 "use server";
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { events } from "@/data/events";
-import { tambahPesanan } from "@/data/pesanan";
+import { pesanan, tambahPesanan } from "@/data/pesanan";
 
 export type HasilPesan = {
   berhasil: boolean;
@@ -67,9 +68,12 @@ export async function pesanTiket(
     waktu: new Date().toLocaleString("id-ID"),
   });
 
+  const toples = await cookies();
+  toples.set("nama", nama, { maxAge: 60 * 80 * 24 * 30 });
   // supaya "Sisa X dari Y tiket" dan katalog ikut diperbarui
   revalidatePath("/event");
   revalidatePath(`/event/${eventId}`);
+  revalidatePath("/pesanan");
 
   return {
     berhasil: true,
@@ -77,4 +81,27 @@ export async function pesanTiket(
     galat: {},
     isian: { nama: "", email: "" },
   };
+}
+export async function batalkanPesanan(formData: FormData) {
+  const nomor = Number(formData.get("nomor"));
+  const namaSaya = (await cookies()).get("nama")?.value;
+  const posisi = pesanan.findIndex((p) => p.nomor === nomor);
+
+  if (posisi === -1 || !namaSaya || pesanan[posisi].nama !== namaSaya) {
+    return;
+  }
+
+  const pesananDibatalkan = pesanan[posisi];
+  const event = events.find((e) => e.id === pesananDibatalkan.eventId);
+
+  if (!event) {
+    throw new Error("Event untuk pesanan tidak ditemukan.");
+  }
+
+  pesanan.splice(posisi, 1);
+  event.terisi -= pesananDibatalkan.jumlah;
+
+  revalidatePath("/event");
+  revalidatePath(`/event/${event.id}`);
+  revalidatePath("/pesanan");
 }
