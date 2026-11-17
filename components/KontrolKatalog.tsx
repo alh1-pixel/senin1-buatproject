@@ -9,7 +9,7 @@ export default function KontrolKatalog({
   daftarKategori: string[];
 }) {
   return (
-    <Form action="/evenr" className="mb-4 flex flex-wrap items-center gap-3">
+    <Form action="/event" className="mb-4 flex flex-wrap items-center gap-3">
       <input
         name="cari"
         defaultValue={s.cari}
