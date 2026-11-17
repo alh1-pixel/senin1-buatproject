@@ -6,11 +6,21 @@ function jeda(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-export async function ambilEvents(): Promise<Event[]> {
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .order("tanggal");
+export async function ambilEvents(
+  limitCount?: number,
+  orderBy: "tanggal" | "harga" = "tanggal",
+  ascending = true,
+): Promise<Event[]> {
+  let query = supabase.from("events").select("*");
+
+  query = query.order(orderBy, { ascending });
+
+  if (limitCount !== undefined) {
+    query = query.limit(limitCount);
+  }
+
+  const { data, error } = await query;
+
   if (error) throw new Error("Gagal memuat event: " + error.message);
   return data as Event[];
 }
