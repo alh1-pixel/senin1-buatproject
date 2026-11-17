@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { events } from "@/data/events";
+import { ambilEvents } from "@/data/ambil";
 import KartuEvent from "@/components/KartuEvent";
 
-export default function Beranda() {
+export default async function Beranda() {
+  const events = await ambilEvents();
   const terdekat = events.slice(0, 3);
   return (
     <div>

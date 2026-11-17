@@ -8,7 +8,7 @@ export default function KartuEvent({ event }: { event: Event }) {
   return (
     <div className="rounded-xl border bg-white p-4 shadow-sm">
       <Image
-        src={event.gambar ?? "/img/default.png"}
+        src={event.gambar?.trim() || "/img/default.png"}
         alt={event.judul}
         width={400}
         height={210}

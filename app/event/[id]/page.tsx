@@ -19,7 +19,7 @@ export default async function Detail({ params }: PageProps<"/event/[id]">) {
     <article className="rounded-xl border bg-white p-6">
       <div className="relative mb-4 aspect-[40/21] w-full">
         <Image
-          src={event.gambar ?? "/img/default.png"}
+          src={event.gambar?.trim() || "/img/default.png"}
           alt={event.judul}
           fill
           sizes="(max-width: 1024px) 100vw, 960px"
