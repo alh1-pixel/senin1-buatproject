@@ -47,11 +47,17 @@ export async function ambilTerkait(event: Event): Promise<Event[]> {
 }
 
 // Pesanan berisi nama dan email orang, jadi dibaca memakai kunci rahasia (hanya di server).
-export async function hitungPesanan(eventId: number): Promise<number> {
-  const { count, error } = await supabaseAdmin
+export async function ringkasanPesanan(eventId: number) {
+  const { data, count, error } = await supabaseAdmin
     .from("pesanan")
-    .select("*", { count: "exact", head: true })
+    .select("jumlah", { count: "exact" })
     .eq("event_id", eventId);
+
   if (error) throw new Error("Gagal menghitung pesanan: " + error.message);
-  return count ?? 0;
+
+  const daftarPesanan = data ?? [];
+  return {
+    jumlahPesanan: count ?? daftarPesanan.length,
+    jumlahTiket: daftarPesanan.reduce((total, item) => total + item.jumlah, 0),
+  };
 }

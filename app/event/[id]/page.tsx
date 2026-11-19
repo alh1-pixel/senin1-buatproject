@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { rupiah } from "@/data/events";
-import { ambilEvent, hitungPesanan } from "@/data/ambil";
+import { ambilEvent, ringkasanPesanan } from "@/data/ambil";
 import FormPesan from "@/components/FormPesan";
 import TombolFavorit from "@/components/TombolFavorit";
 import EventTerkait from "@/components/EventTerkait";
@@ -25,7 +25,7 @@ export default async function Detail({ params }: PageProps<"/event/[id]">) {
   const event = await ambilEvent(Number(id));
   if (!event) notFound();
 
-  const jumlahPesanan = await hitungPesanan(event.id);
+  const ringkasan = await ringkasanPesanan(event.id);
   const sisa = event.kuota - event.terisi;
   const namaAWal = (await cookies()).get("nama")?.value ?? "";
   return (
@@ -51,9 +51,10 @@ export default async function Detail({ params }: PageProps<"/event/[id]">) {
       <p className="text-slate-600">
         Sisa {sisa} dari {event.kuota} tiket
       </p>
-      <p className="tex-sm text-slate-500">
-        {jumlahPesanan} pesanan masuk lewat EventKu
-      </p>
+      <div className="text-sm text-slate-500">
+        <p>{ringkasan.jumlahPesanan} pesanan masuk lewat EventKu</p>
+        <p>{ringkasan.jumlahTiket} tiket dipesan lewat EventKu</p>
+      </div>
       <TombolFavorit id={event.id} />
       <FormPesan event={event} namaAwal={namaAWal} />
       <section className="mt-6">
