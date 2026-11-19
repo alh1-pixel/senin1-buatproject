@@ -1,17 +1,18 @@
-import { events, type Event } from "@/data/events";
 import { supabase } from "@/lib/supabase";
-
-// Pura-pura mengambil data dari database yang agak lambat (masih dipakai dua fungsi di bawah).
-function jeda(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import type { Event } from "./events";
 
 export async function ambilEvents(
   limitCount?: number,
   orderBy: "tanggal" | "harga" = "tanggal",
   ascending = true,
+  tanggalMulai?: string,
 ): Promise<Event[]> {
   let query = supabase.from("events").select("*");
+
+  if (tanggalMulai) {
+    query = query.gte("tanggal", tanggalMulai);
+  }
 
   query = query.order(orderBy, { ascending });
 
@@ -20,19 +21,37 @@ export async function ambilEvents(
   }
 
   const { data, error } = await query;
-
   if (error) throw new Error("Gagal memuat event: " + error.message);
   return data as Event[];
 }
-
-export async function ambilEvent(id: number) {
-  await jeda(880);
-  return events.find((e) => e.id === id);
+export async function ambilEvent(id: number): Promise<Event | null> {
+  if (!Number.isInteger(id)) return null;
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error("Gagal memuat event: " + error.message);
+  return data as Event | null;
 }
 
-export async function ambilTerkait(event: Event) {
-  await jeda(2000);
-  return events.filter(
-    (e) => e.kategori === event.kategori && e.id !== event.id,
-  );
+export async function ambilTerkait(event: Event): Promise<Event[]> {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("kategori", event.kategori)
+    .neq("id", event.id)
+    .order("tanggal");
+  if (error) throw new Error("Gagal memuat event terkait: " + error.message);
+  return data as Event[];
+}
+
+// Pesanan berisi nama dan email orang, jadi dibaca memakai kunci rahasia (hanya di server).
+export async function hitungPesanan(eventId: number): Promise<number> {
+  const { count, error } = await supabaseAdmin
+    .from("pesanan")
+    .select("*", { count: "exact", head: true })
+    .eq("event_id", eventId);
+  if (error) throw new Error("Gagal menghitung pesanan: " + error.message);
+  return count ?? 0;
 }

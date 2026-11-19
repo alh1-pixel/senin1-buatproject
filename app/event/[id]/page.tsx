@@ -1,25 +1,38 @@
 import { Suspense } from "react";
+import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { rupiah } from "@/data/events";
-import { ambilEvent } from "@/data/ambil";
-import Image from "next/image";
+import { ambilEvent, hitungPesanan } from "@/data/ambil";
 import FormPesan from "@/components/FormPesan";
 import TombolFavorit from "@/components/TombolFavorit";
 import EventTerkait from "@/components/EventTerkait";
 
+export async function generateMetadat({
+  params,
+}: PageProps<"/event/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const event = await ambilEvent(Number(id));
+  if (!event) return { title: "Event tidak ditemukan" };
+  return {
+    title: event.judul,
+    description: `${event.kategori} di ${event.lokasi}, ${event.tanggal}, ${rupiah(event.harga)}.`,
+  };
+}
 export default async function Detail({ params }: PageProps<"/event/[id]">) {
   const { id } = await params;
   const event = await ambilEvent(Number(id));
   if (!event) notFound();
 
+  const jumlahPesanan = await hitungPesanan(event.id);
   const sisa = event.kuota - event.terisi;
-  const namaAwal = (await cookies()).get("nama")?.value ?? "";
+  const namaAWal = (await cookies()).get("nama")?.value ?? "";
   return (
     <article className="rounded-xl border bg-white p-6">
       <div className="relative mb-4 aspect-[40/21] w-full">
         <Image
-          src={event.gambar?.trim() || "/img/default.png"}
+          src={event.gambar ?? "/img/default.png"}
           alt={event.judul}
           fill
           sizes="(max-width: 1024px) 100vw, 960px"
@@ -38,10 +51,13 @@ export default async function Detail({ params }: PageProps<"/event/[id]">) {
       <p className="text-slate-600">
         Sisa {sisa} dari {event.kuota} tiket
       </p>
+      <p className="tex-sm text-slate-500">
+        {jumlahPesanan} pesanan masuk lewat EventKu
+      </p>
       <TombolFavorit id={event.id} />
-      <FormPesan event={event} namaAwal={namaAwal} />
+      <FormPesan event={event} namaAwal={namaAWal} />
       <section className="mt-6">
-        <h2 className="font-semibold">Event terkait</h2>
+        <h2 className="font-semibold">Event Terkait</h2>
         <Suspense
           fallback={<p className="text-slate-400">Memuat event terkait...</p>}
         >
