@@ -39,8 +39,8 @@ export async function pesanTiket(
   if (!Number.isInteger(jumlah) || jumlah < 1)
     galat.jumlah = "Jumlah tiket minimal 1.";
   else if (jumlah > 5) galat.jumlah = "Maksimal 5 tiket per pesanan.";
-  else if (jumlah > event.kuota)
-    galat.jumlah = `Sisa tiket hanya ${event.kuota}.`;
+  else if (jumlah > event.kuota - event.terisi)
+    galat.jumlah = `Sisa tiket hanya ${event.kuota - event.terisi}.`;
 
   if (Object.keys(galat).length > 0) {
     return {
@@ -71,15 +71,27 @@ export async function pesanTiket(
     };
   }
 
-  const { error: galatKuota } = await supabaseAdmin
+  const { data: kuotaBaru, error: galatKuota } = await supabaseAdmin
     .from("events")
     .update({ terisi: event.terisi + jumlah })
-    .eq("id", eventId);
+    .eq("id", eventId)
+    .eq("terisi", event.terisi)
+    .select("id")
+    .maybeSingle();
   if (galatKuota) {
     return {
       berhasil: false,
       pesan:
         "Pesanan tersimpan, tetapi kuota gagal diperbarui. Hubungi panitia.",
+      galat: {},
+      isian,
+    };
+  }
+  if (!kuotaBaru) {
+    await supabaseAdmin.from("pesanan").delete().eq("nomor", baru.nomor);
+    return {
+      berhasil: false,
+      pesan: "Tiket baru saja berubah, coba lagi.",
       galat: {},
       isian,
     };

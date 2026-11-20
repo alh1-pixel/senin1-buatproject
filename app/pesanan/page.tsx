@@ -6,6 +6,22 @@ import { rupiah } from "@/data/events";
 import { batalkanPesanan } from "@/app/actions";
 
 export const metadata: Metadata = { title: "Daftar Pesanan" };
+export const dynamic = "force-dynamic";
+
+function formatWaktu(dibuat: string) {
+  const memilikiZona = /(?:Z|[+-]\d{2}:\d{2})$/i.test(dibuat);
+  const iso = memilikiZona ? dibuat : `${dibuat.replace(" ", "T")}Z`;
+
+  return new Date(iso).toLocaleString("id-ID", {
+    timeZone: "Asia/Jakarta",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
 
 export default async function HalamanPesanan() {
   const pesanan = await ambilPesanan();
@@ -40,6 +56,7 @@ export default async function HalamanPesanan() {
                 <th className="p-2">#</th>
                 <th className="p-2">Event</th>
                 <th className="p-2">Pemesanan</th>
+                <th className="p-2">Waktu</th>
                 <th className="p-2">Tiket</th>
                 <th className="p-2">Total</th>
                 <th className="p-2"></th>
@@ -60,6 +77,7 @@ export default async function HalamanPesanan() {
                       </span>
                     )}
                   </td>
+                  <td className="p-2">{formatWaktu(p.dibuat)}</td>
                   <td className="p-2">{p.jumlah}</td>
                   <td className="p-2">{rupiah(p.total)}</td>
                   <td className="p-2">
