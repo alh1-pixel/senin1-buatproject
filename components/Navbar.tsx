@@ -9,6 +9,7 @@ const menu = [
   { href: "/tentang", teks: "Tentang" },
   { href: "/kontak", teks: "Kontak" },
   { href: "/pesanan", teks: "Pesanan" },
+  { href: "/admin", teks: "Admin" },
 ];
 
 export default function Navbar() {
