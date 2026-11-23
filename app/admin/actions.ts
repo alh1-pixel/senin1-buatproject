@@ -115,7 +115,7 @@ export async function hapusEvent(formData: FormData) {
     // 23503 = masih dipakai tabel lain (foreign key): event ini sudah punya pesanan
     const pesan =
       error.code === "23503"
-        ? "Event ini sudah punya pesanan, dai tidak bisa dihapus."
+        ? "Event ini sudah punya pesanan, dan tidak bisa dihapus."
         : "Gagal mengahapus: " + error.message;
     redirect("/admin?galat=" + encodeURIComponent(pesan));
   }

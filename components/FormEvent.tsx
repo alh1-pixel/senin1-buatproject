@@ -15,7 +15,7 @@ export default function FormEvent({ event }: { event?: Event }) {
       id: event ? String(event.id) : "",
       judul: event?.judul ?? "",
       kategori: event?.kategori ?? "",
-      tanggal: event?.lokasi ?? "",
+      tanggal: event?.tanggal ?? "",
       lokasi: event?.lokasi ?? "",
       harga: event ? String(event.harga) : "0",
       kuota: event ? String(event.kuota) : "",
@@ -37,9 +37,27 @@ export default function FormEvent({ event }: { event?: Event }) {
           name="judul"
           defaultValue={i.judul}
           placeholder="Judul"
-          className="kolom"
+          className={kolom}
+        />
+        <Galat teks={hasil.galat.judul} />
+      </div>
+      <div>
+        <input
+          name="kategori"
+          defaultValue={i.kategori}
+          placeholder="Kategori"
+          className={kolom}
         />
         <Galat teks={hasil.galat.kategori} />
+      </div>
+      <div>
+        <input
+          name="tanggal"
+          type="date"
+          defaultValue={i.tanggal}
+          className={kolom}
+        />
+        <Galat teks={hasil.galat.tanggal} />
       </div>
       <div>
         <input
